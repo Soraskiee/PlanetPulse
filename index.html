@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PlanetPulse</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         WELCOME SCREEN
+         ========================= -->
+
+    <main
+        class="welcome-screen"
+        id="welcomeScreen"
+    >
+
+        <div class="welcome-content">
+
+            <div class="logo">
+                🌱
+            </div>
+
+            <h1>
+                Welcome to PlanetPulse
+            </h1>
+
+            <p>
+                See the carbon impact of your everyday choices.
+            </p>
+
+            <p>
+                Track things like driving, eating, flying and
+                electricity use and see how they add up over time.
+            </p>
+
+            <button
+                class="continue-btn"
+                id="startButton"
+            >
+                Let's get started →
+            </button>
+
+        </div>
+
+    </main>
+
+
+
+    <!-- =========================
+         TARGET SCREEN
+         ========================= -->
+
+    <main
+        class="target-screen"
+        id="targetScreen"
+    >
+
+        <div class="target-content">
+
+            <h1>
+                Understand your footprint
+            </h1>
+
+            <p class="explanation">
+                Your carbon footprint is an estimate of the CO₂
+                produced by your everyday activities.
+            </p>
+
+            <p class="explanation">
+                There isn't one exact number where your footprint
+                suddenly becomes "dangerous". A reference can simply
+                help you understand the scale of your emissions.
+            </p>
+
+
+            <section class="target-section">
+
+                <h2>
+                    Set your weekly target
+                </h2>
+
+                <p class="target-description">
+                    Choose the amount of CO₂ you'd like to aim for each week.
+                </p>
+
+                <div class="target-input">
+
+                    <input
+                        type="number"
+                        id="targetInput"
+                        value="40"
+                        min="1"
+                    >
+
+                    <span>
+                        kg CO₂ / week
+                    </span>
+
+                </div>
+
+                <p class="reference">
+                    Suggested reference: ~40 kg/week
+                </p>
+
+            </section>
+
+
+            <button
+                class="continue-btn"
+                id="startTrackingButton"
+            >
+                Start tracking →
+            </button>
+
+        </div>
+
+    </main>
+
+
+
+    <!-- =========================
+         MAIN APP
+         ========================= -->
+
+    <main
+        class="app-screen"
+        id="appScreen"
+    >
+
+
+        <!-- =====================
+             HEADER
+             ===================== -->
+
+        <header class="app-header">
+
+            <div>
+
+                <div class="brand">
+                    🌱 PlanetPulse
+                </div>
+
+                <p>
+                    This week's carbon footprint
+                </p>
+
+            </div>
+
+
+
+            <div class="header-actions">
+
+                <button
+                    class="streak-btn"
+                    id="streakButton"
+                >
+                    <span class="streak-icon">🔥</span>
+                    <span>
+                        <strong id="streakCount">0</strong> day streak
+                    </span>
+                </button>
+
+                <button
+                    class="history-btn"
+                    id="addActivityButton"
+                >
+
+                <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+
+                    <path
+                        d="M3.5 6.5V12H9"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+
+                    <path
+                        d="M3.8 12A8.5 8.5 0 1 0 6 5.8"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                    />
+
+                    <path
+                        d="M12 7.5V12L15 14"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+
+                </svg>
+
+                History
+
+                </button>
+
+                <div
+                    class="streak-popover"
+                    id="streakPopover"
+                >
+                    <strong>Your streak</strong>
+                    <p id="streakInfoText">Log a successful day to start your streak.</p>
+                    <div class="streak-popover-stats">
+                        <span>🔥 <strong id="streakInfoCount">0</strong> days</span>
+                        <span>🛡️ <strong id="streakInfoShield">0</strong> shield</span>
+                    </div>
+                </div>
+
+            </div>
+</header>
+
+
+
+        <!-- =====================
+             SUMMARY
+             ===================== -->
+
+        <section class="summary-card">
+
+            <div class="summary-top">
+
+                <div>
+
+                    <span class="label">
+                        Total footprint
+                    </span>
+
+                    <div class="total">
+
+                        <span id="totalFootprint">
+                            0.0
+                        </span>
+
+                        <small>
+                            kg CO₂
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="target-display">
+
+                    <span class="label">
+                        Weekly target
+                    </span>
+
+                    <strong>
+
+                        <span id="targetDisplay">
+                            40
+                        </span>
+
+                        kg
+
+                    </strong>
+
+                    <button
+                        class="edit-target-btn"
+                        id="editTargetButton"
+                    >
+                        Edit
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="progress-bar">
+
+                <div
+                    class="progress-fill"
+                    id="progressFill"
+                ></div>
+
+            </div>
+
+
+            <p
+                class="progress-text"
+                id="progressText"
+            >
+                0% of your weekly target used
+            </p>
+
+        </section>
+
+
+
+
+        <!-- =====================
+             CHALLENGES
+             ===================== -->
+
+        <section
+            class="challenge-section"
+            id="challengeSection"
+        >
+
+            <div class="challenge-header">
+
+                <div>
+                    <span class="challenge-eyebrow">PLANETPULSE CHALLENGE</span>
+                    <h2 id="challengeTitle">Make a comeback</h2>
+                    <p id="challengeSubtitle">Small actions can protect your streak.</p>
+                </div>
+
+                <div class="shield-badge" id="shieldBadge">🛡️ <strong id="shieldCount">0</strong></div>
+
+            </div>
+
+            <div class="challenge-list" id="challengeList"></div>
+
+        </section>
+
+
+
+
+        <!-- =====================
+             ADD ACTIVITY
+             ===================== -->
+
+        <section
+            class="activity-card"
+            id="activityForm"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <h2>
+                        Add activity
+                    </h2>
+
+                    <p>
+                        Log something from your day.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <div class="form-group">
+
+                    <label for="activityType">
+                        Activity
+                    </label>
+
+                    <select id="activityType">
+
+                        <option value="car">
+                            Car travel
+                        </option>
+
+                        <option value="bus">
+                            Bus travel
+                        </option>
+
+                        <option value="flight">
+                            Flight
+                        </option>
+
+                        <option value="electricity">
+                            Electricity
+                        </option>
+
+                        <option value="veg">
+                            Vegetarian meal
+                        </option>
+
+                        <option value="nonveg">
+                            Non-vegetarian meal
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="quantity">
+                        Quantity
+                    </label>
+
+                    <input
+                        type="number"
+                        id="quantity"
+                        placeholder="e.g. 10"
+                        min="0"
+                        step="0.1"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <p
+                class="calculation-preview"
+                id="calculationPreview"
+            >
+                Enter a quantity to calculate your footprint.
+            </p>
+
+
+            <button
+                class="save-btn"
+                id="saveActivityButton"
+            >
+                Add activity
+            </button>
+
+        </section>
+
+
+
+        <!-- =====================
+             CATEGORY BREAKDOWN
+             ===================== -->
+
+        <section class="breakdown-section">
+
+            <div class="section-title">
+
+                <h2>
+                    Breakdown
+                </h2>
+
+            </div>
+
+
+            <div class="category-grid">
+
+
+                <div class="category-card">
+
+                    <span class="category-icon">
+                        🚗
+                    </span>
+
+                    <div>
+
+                        <p>
+                            Transport
+                        </p>
+
+                        <strong>
+
+                            <span id="transportTotal">
+                                0.0
+                            </span>
+
+                            kg
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="category-card">
+
+                    <span class="category-icon">
+                        🍽️
+                    </span>
+
+                    <div>
+
+                        <p>
+                            Food
+                        </p>
+
+                        <strong>
+
+                            <span id="foodTotal">
+                                0.0
+                            </span>
+
+                            kg
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="category-card">
+
+                    <span class="category-icon">
+                        ⚡
+                    </span>
+
+                    <div>
+
+                        <p>
+                            Electricity
+                        </p>
+
+                        <strong>
+
+                            <span id="electricityTotal">
+                                0.0
+                            </span>
+
+                            kg
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================
+             WEEKLY TRENDS
+             ===================== -->
+
+        <section class="trends-section" id="trendsSection">
+
+            <div class="section-title">
+                <div>
+                    <h2>Weekly trend</h2>
+                    <p>See how your footprint changes from week to week.</p>
+                </div>
+            </div>
+
+            <div class="trend-card">
+                <div class="trend-summary">
+                    <div>
+                        <span>This week</span>
+                        <strong><span id="trendCurrentTotal">0.0</span> kg</strong>
+                    </div>
+                    <div>
+                        <span>vs last week</span>
+                        <strong id="trendChange">—</strong>
+                    </div>
+                </div>
+
+                <div class="trend-chart-wrap">
+                    <svg
+                        id="weeklyTrendChart"
+                        class="weekly-trend-chart"
+                        viewBox="0 0 700 270"
+                        role="img"
+                        aria-label="Weekly carbon footprint trend"
+                    ></svg>
+                </div>
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================
+             HISTORY
+             ===================== -->
+
+        <section
+            class="history-section"
+            id="historySection"
+        >
+
+            <div class="history-header">
+
+
+                <div>
+
+                    <h2>
+                        History
+                    </h2>
+
+                    <p>
+                        Your logged activities
+                    </p>
+
+                </div>
+
+
+                <div class="history-actions">
+
+                    <button
+                        class="close-history-btn"
+                        id="closeHistoryButton"
+                    >
+                        ← Back
+                    </button>
+
+
+                    <div class="history-filters">
+
+                        <select id="historyFilter">
+
+                            <option value="all">
+                                All activities
+                            </option>
+
+                            <option value="transport">
+                                Transport
+                            </option>
+
+                            <option value="food">
+                                Food
+                            </option>
+
+                            <option value="electricity">
+                                Electricity
+                            </option>
+
+                        </select>
+
+
+                        <input
+                            type="date"
+                            id="historyDateFilter"
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="history-list"
+                id="historyList"
+            >
+
+                <div class="empty-history">
+                    No activities logged yet.
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- =========================
+         JAVASCRIPT
+         ========================= -->
+
+    <script
+        src="{{ url_for('static', filename='script.js') }}"
+    ></script>
+
+
+</body>
+
+</html>
