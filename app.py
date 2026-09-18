@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, jsonify
 import sqlite3
 from pathlib import Path
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 BASE_DIR = Path(__file__).resolve().parent
 DB_PATH = BASE_DIR / "planetpulse.db"
@@ -80,14 +82,11 @@ def add_activity():
 
     if not client_id:
         return jsonify({"error": "Missing client_id"}), 400
-
     if activity_type not in VALID_TYPES:
         return jsonify({"error": "Invalid activity type"}), 400
-
     if quantity <= 0:
         return jsonify({"error": "Quantity must be greater than zero"}), 400
 
-    # Server-side validation mirrors the limits used by the UI.
     max_values = {
         "car": 10000,
         "bus": 10000,
@@ -96,19 +95,23 @@ def add_activity():
         "veg": 100,
         "nonveg": 100,
     }
+
     if quantity > max_values[activity_type]:
         return jsonify({"error": "Quantity is above the allowed limit"}), 400
 
-    # Calculate emission on the server rather than trusting the browser.
+    # Use India local time instead of SQLite's UTC CURRENT_TIMESTAMP.
+    # This keeps activity dates aligned with the user's local calendar day.
+    activity_date = datetime.now(ZoneInfo("Asia/Kolkata")).strftime("%Y-%m-%d %H:%M:%S")
+
     emission = quantity * EMISSION_FACTORS[activity_type]
 
     with get_db() as conn:
         cursor = conn.execute(
             """
-            INSERT INTO activities (client_id, type, quantity, emission)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO activities (client_id, type, quantity, emission, date)
+            VALUES (?, ?, ?, ?, ?)
             """,
-            (client_id, activity_type, quantity, emission),
+            (client_id, activity_type, quantity, emission, activity_date),
         )
         conn.commit()
         activity_id = cursor.lastrowid
